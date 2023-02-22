@@ -1,0 +1,43 @@
+#!/bin/bash
+
+TEAM_ID=
+USER_ID=
+BASE_URL="https://api.clickup.com/api/v2/team/$TEAM_ID/time_entries"
+CU_API_KEY=
+
+cu_start() {
+	body="{\"description\": \"\",\"tags\": [],\"tid\": \"$1\",\"billable\": false}"
+
+	curl \
+		-L \
+		-d "$body" \
+		-H 'Content-Type: application/json' \
+		-H "Authorization: $CU_API_KEY" \
+		"$BASE_URL/start?team_id=$TEAM_ID&custom_task_ids=0" | \
+	jq
+}
+
+cu_stop() {
+	curl \
+		-L \
+		-X POST \
+		-H 'Content-Type: application/json' \
+		-H "Authorization: $CU_API_KEY" \
+		"$BASE_URL/stop?team_id=$TEAM_ID&custom_task_ids=0" | \
+	jq
+}
+
+case $1 in
+start)
+	cu_start $2
+	echo
+	;;
+stop)
+	cu_stop $2
+	echo
+	;;
+*)
+	echo "unexpected command $1 $2"
+	echo
+	;;
+esac
